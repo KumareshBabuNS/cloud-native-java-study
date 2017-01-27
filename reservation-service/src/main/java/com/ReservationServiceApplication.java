@@ -11,7 +11,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -31,12 +34,18 @@ public class ReservationServiceApplication {
                         .forEach(x -> repository.save(new Reservation(x)));
     }
 
-//    @Bean
-//    CommandLineRunner runner(ReservationRepository repository) {
-//        return args ->
-//                Arrays.asList("Marten,Josh,Dave,Mark,Mark,Juergen".split(","))
-//                        .forEach(x -> repository.save(new Reservation(x)));
-//    }
+    @RefreshScope
+    @RestController
+    class MessageRestController {
+
+        @Value("${message}")
+        private String message;
+
+        @RequestMapping("/message")
+        String message() {
+            return this.message;
+        }
+    }
 
     @Bean
     HealthIndicator healthIndicator() {
